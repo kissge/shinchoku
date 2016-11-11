@@ -4,6 +4,7 @@ import com.google.inject.name.Named
 import com.google.inject.{ AbstractModule, Provides }
 import com.mohiva.play.silhouette.api.actions.{ SecuredErrorHandler, UnsecuredErrorHandler }
 import com.mohiva.play.silhouette.api.crypto._
+import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.services._
 import com.mohiva.play.silhouette.api.util._
@@ -27,9 +28,12 @@ import net.ceedubs.ficus.readers.ArbitraryTypeReader._
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Configuration
 import play.api.libs.concurrent.Execution.Implicits._
+import play.api.libs.json.JsValue
 import play.api.libs.openid.OpenIdClient
 import play.api.libs.ws.WSClient
 import utils.auth.{ CustomSecuredErrorHandler, CustomUnsecuredErrorHandler, DefaultEnv }
+
+import scala.concurrent.Future
 
 /**
  * The Guice module which wires all Silhouette dependencies.
@@ -265,6 +269,51 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     configuration: Configuration): TwitterProvider = {
 
     val settings = configuration.underlying.as[OAuth1Settings]("silhouette.twitter")
-    new TwitterProvider(httpLayer, new PlayOAuth1Service(settings), tokenSecretProvider, settings)
+    new MyTwitterProvider(httpLayer, new PlayOAuth1Service(settings), tokenSecretProvider, settings)
   }
+}
+
+class MyTwitterProvider(
+  override protected val httpLayer: HTTPLayer,
+  override val service: OAuth1Service,
+  override protected val tokenSecretProvider: OAuth1TokenSecretProvider,
+  override val settings: OAuth1Settings)
+  extends TwitterProvider(httpLayer, service, tokenSecretProvider, settings) {
+
+  /**
+   * The type of this class.
+   */
+  // override type Self = MyTwitterProvider
+  // ?????
+
+  /**
+   * The profile parser implementation.
+   */
+  override val profileParser = new MyTwitterProfileParser
+
+}
+
+/**
+ * The profile parser for the common social profile.
+ */
+class MyTwitterProfileParser extends TwitterProfileParser {
+
+  /**
+   * Parses the social profile.
+   *
+   * @param json     The content returned from the provider.
+   * @param authInfo The auth info to query the provider again for additional data.
+   * @return The social profile from given result.
+   */
+  override def parse(json: JsValue, authInfo: OAuth1Info) = Future.successful {
+    val userID = (json \ "id").as[Long]
+    val fullName = (json \ "screen_name").asOpt[String]
+    val avatarURL = (json \ "profile_image_url_https").asOpt[String]
+
+    CommonSocialProfile(
+      loginInfo = LoginInfo("twitter", userID.toString), // ?????
+      fullName = fullName,
+      avatarURL = avatarURL)
+  }
+
 }
