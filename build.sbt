@@ -22,7 +22,12 @@ libraryDependencies ++= Seq(
   "com.mohiva" %% "play-silhouette-testkit" % "4.0.0" % "test",
   specs2 % Test,
   cache,
-  filters
+  filters,
+  "com.typesafe.play" %% "play-slick" % "2.0.0",
+  "com.typesafe.play" %% "play-slick-evolutions" % "2.0.0",
+  "com.typesafe.slick" %% "slick-codegen" % "3.1.1",
+  "mysql" % "mysql-connector-java" % "5.1.40",
+  "com.mohiva" %% "play-silhouette-persistence" % "4.0.0"
 )
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
@@ -54,3 +59,19 @@ ScalariformKeys.preferences := ScalariformKeys.preferences.value
   .setPreference(FormatXml, false)
   .setPreference(DoubleIndentClassDeclaration, false)
   .setPreference(DanglingCloseParenthesis, Preserve)
+
+//********************************************************
+// slick-codegen settings
+//********************************************************
+
+slickCodegenSettings
+sourceGenerators in Compile <+= slickCodegen
+// TODO: Inject parameters
+slickCodegenDatabaseUrl := ""
+slickCodegenDatabaseUser := ""
+slickCodegenDatabasePassword := ""
+slickCodegenDriver := slick.driver.MySQLDriver
+slickCodegenJdbcDriver := "com.mysql.jdbc.Driver"
+slickCodegenOutputPackage := "models"
+slickCodegenExcludedTables in Compile := Seq("schema_version")
+slickCodegenOutputDir := (sourceManaged in Compile).value
