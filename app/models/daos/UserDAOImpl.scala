@@ -33,7 +33,7 @@ class UserDAOImpl @Inject() (protected val dbConfigProvider: DatabaseConfigProvi
       .map(_.headOption)
       .flatMap { row =>
         Future.successful(row.map { row2 =>
-          User(row2.id, LoginInfo("twitter", row2.socialId.toString), row2.screenName, row2.avatarUrl, row2.apiToken)
+          User(row2.id, LoginInfo("twitter", row2.socialId.toString), row2.screenName, row2.apiToken)
         })
       }
   // なんかもっと良い書き方ありそうだなあ
@@ -49,7 +49,7 @@ class UserDAOImpl @Inject() (protected val dbConfigProvider: DatabaseConfigProvi
       .map(_.headOption)
       .flatMap { row =>
         Future.successful(row.map { row2 =>
-          User(row2.id, LoginInfo("twitter", row2.socialId.toString), row2.screenName, row2.avatarUrl, row2.apiToken)
+          User(row2.id, LoginInfo("twitter", row2.socialId.toString), row2.screenName, row2.apiToken)
         })
       }
 
@@ -60,7 +60,7 @@ class UserDAOImpl @Inject() (protected val dbConfigProvider: DatabaseConfigProvi
    * @return The saved user.
    */
   def save(user: User) = {
-    db.run(Users.insertOrUpdate(UsersRow(user.userID, user.loginInfo.providerKey.toLong, user.screenName, user.avatarURL, user.apiToken)))
+    db.run(Users.insertOrUpdate(UsersRow(user.userID, user.loginInfo.providerKey.toLong, user.screenName, user.apiToken)))
     // implicitConversionで書き直したい
     Future.successful(user)
   }
