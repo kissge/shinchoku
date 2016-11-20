@@ -139,3 +139,11 @@ meter[value="4"]::-moz-meter-bar { background: green; }
 meter::-webkit-meter-optimum-value {
     transition: width .4s ease-out;
 }
+
+.goals {
+    margin-top: 50px;
+}
+
+.goals li.past {
+    opacity: 0.5;
+}

@@ -7,8 +7,10 @@ import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
 import play.api.i18n.{ I18nSupport, MessagesApi }
 import play.api.mvc.Controller
 import utils.auth.DefaultEnv
+import models.daos._
 
 import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
 
 /**
  * The basic application controller.
@@ -22,7 +24,8 @@ class ApplicationController @Inject() (
   val messagesApi: MessagesApi,
   silhouette: Silhouette[DefaultEnv],
   socialProviderRegistry: SocialProviderRegistry,
-  implicit val webJarAssets: WebJarAssets)
+  implicit val webJarAssets: WebJarAssets,
+  goalDAO: GoalDAO)
   extends Controller with I18nSupport {
 
   /**
@@ -31,7 +34,9 @@ class ApplicationController @Inject() (
    * @return The result to display.
    */
   def index = silhouette.SecuredAction.async { implicit request =>
-    Future.successful(Ok(views.html.home(request.identity)))
+    for {
+      goals <- goalDAO.list
+    } yield Ok(views.html.home(request.identity, goals))
   }
 
   /**
