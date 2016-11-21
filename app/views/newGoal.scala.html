@@ -1,0 +1,48 @@
+@import org.joda.time.DateTime
+
+@(user: models.User, goalForm: Form[(String, String, DateTime, Int)])(implicit request: RequestHeader, messages: Messages, webJarAssets: WebJarAssets)
+
+@import helper._
+
+@main(Messages("newGoal.title"), Some(user)) {
+    <div class="new-goal col-md-6 col-md-offset-3">
+        @form(routes.ApplicationController.newGoalExecute) {
+            @CSRF.formField
+
+            @inputText(goalForm("name"),
+                       '_label -> "タイトル",
+                       '_showConstraints -> false,
+                       'class -> "long",
+                       'placeholder -> "○○学会年次大会 20xx")
+
+            @inputText(goalForm("description"),
+                       '_label -> "説明",
+                       '_showConstraints -> false,
+                       'class -> "long",
+                       'placeholder -> "第○回○○学会年次大会の原稿提出締切")
+
+            @inputText(goalForm("maxProgress"),
+                       '_label -> "目標達成度",
+                       '_showConstraints -> false,
+                       'placeholder -> "文字数、ページ数など")
+
+            @inputText(goalForm("timeLimit"),
+                       '_label -> "終了時刻",
+                       '_showConstraints -> false,
+                       'class -> "flatpickr")
+
+            <input type="submit" value="作成">
+
+            }
+    </div>
+
+    <script>
+     window.addEventListener('DOMContentLoaded',
+                             _ => flatpickr('.flatpickr', {
+                                 enableTime: true,
+                                 enableSeconds: true,
+                                 minDate: new Date,
+                             }),
+                             false);
+    </script>
+}

@@ -9,6 +9,9 @@ GET         /authenticate/:provider          controllers.SocialAuthController.au
 
 GET         /signIn                          controllers.SignInController.view
 
+GET         /goal                            controllers.ApplicationController.newGoal
+POST        /goal                            controllers.ApplicationController.newGoalExecute
+
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                    controllers.Assets.at(path="/public", file)
 GET         /webjars/*file                   controllers.WebJarAssets.at(file)

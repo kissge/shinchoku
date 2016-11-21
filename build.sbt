@@ -27,7 +27,8 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "play-slick-evolutions" % "2.0.0",
   "com.typesafe.slick" %% "slick-codegen" % "3.1.1",
   "mysql" % "mysql-connector-java" % "5.1.40",
-  "com.mohiva" %% "play-silhouette-persistence" % "4.0.0"
+  "com.mohiva" %% "play-silhouette-persistence" % "4.0.0",
+  "com.github.tototoshi" %% "slick-joda-mapper" % "2.1.0"
 )
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
@@ -75,3 +76,18 @@ slickCodegenJdbcDriver := "com.mysql.jdbc.Driver"
 slickCodegenOutputPackage := "models"
 slickCodegenExcludedTables in Compile := Seq("schema_version")
 slickCodegenOutputDir := (sourceManaged in Compile).value
+slickCodegenCodeGenerator := { (model:  slick.model.Model) =>
+  new slick.codegen.SourceCodeGenerator(model) {
+        override def code =
+          "import com.github.tototoshi.slick.H2JodaSupport._\n" + "import org.joda.time.DateTime\n" + super.code
+    override def Table = new Table(_) {
+      override def Column = new Column(_) {
+        override def rawType = model.tpe match {
+          case "java.sql.Timestamp" => "DateTime" // kill j.s.Timestamp
+          case _ =>
+            super.rawType
+        }
+      }
+    }
+  }
+}

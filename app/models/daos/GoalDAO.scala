@@ -16,4 +16,8 @@ trait GoalDAO {
    */
   def list(): Future[Seq[Goal]]
 
+  /**
+   * Create a goal.
+   */
+  def create(goal: Goal): Future[Goal]
 }

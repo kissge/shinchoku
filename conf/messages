@@ -1,11 +1,15 @@
-error.email = Valid email required
-error.required = This field is required
+error.date = 日時を入力して下さい
+error.future = 現在より先の日時を入力して下さい
+error.number = 整数値を入力して下さい
+error.min = {0}以上の値を入力して下さい
+error.required = 入力して下さい
 invalid.credentials = Invalid credentials!
 access.denied = Access denied!
 could.not.authenticate = Could not authenticate with social provider! Please try again!
 
-home.title = Silhouette - Home
-sign.in.title = Silhouette - Sign In
+home.title = Shinchoku - Home
+newGoal.title = Shinchoku - Create Goal
+sign.in.title = Shinchoku - Sign In
 
 toggle.navigation = Toggle navigation
 welcome.signed.in = Welcome, you are now signed in!
@@ -16,6 +20,7 @@ error = Error!
 info = Info!
 success = Success!
 home = Home
+newGoal = Create Goal
 first.name = First name
 last.name = Last name
 full.name = Full name

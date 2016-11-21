@@ -10,6 +10,7 @@ import play.api.db.slick.{ HasDatabaseConfigProvider, DatabaseConfigProvider }
 import slick.driver.JdbcProfile
 import models.Tables._
 import org.joda.time.DateTime
+import com.github.tototoshi.slick.H2JodaSupport._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -30,4 +31,10 @@ class GoalDAOImpl @Inject() (protected val dbConfigProvider: DatabaseConfigProvi
             new DateTime(rGoal.createdAt))
       })
     }
+
+  def create(goal: Goal) = {
+    db.run(Goals += GoalsRow(goal.goalID, goal.name, goal.description, goal.timeLimit, goal.maxProgress, goal.createdBy.userID, goal.createdAt))
+    Future.successful(goal)
+  }
+
 }

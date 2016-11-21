@@ -147,3 +147,15 @@ meter::-webkit-meter-optimum-value {
 .goals li.past {
     opacity: 0.5;
 }
+
+.new-goal input.long {
+    width: 100%;
+}
+
+.new-goal dl.error input {
+    background-color: rgb(255, 216, 216);
+}
+
+.new-goal dd.error {
+    text-align: right;
+}
