@@ -54,6 +54,15 @@ class ApplicationController @Inject() (
     silhouette.env.authenticatorService.discard(request.authenticator, result)
   }
 
+  def showGoal(id: Int) = silhouette.SecuredAction.async { implicit request =>
+    for {
+      goal <- goalDAO.find(id)
+    } yield goal match {
+      case Some(goal) => Ok(views.html.showGoal(request.identity, goal))
+      case None => NotFound
+    }
+  }
+
   def newGoal = silhouette.SecuredAction.async { implicit request =>
     Future.successful(Ok(views.html.newGoal(request.identity, goalForm)))
   }
@@ -62,9 +71,9 @@ class ApplicationController @Inject() (
     goalForm.bindFromRequest.fold(
       errors => Future.successful(BadRequest(views.html.newGoal(request.identity, errors))),
       {
-        case (name, description, timeLimit, maxProgress) =>
-          goalDAO.create(new Goal(0, name, description, timeLimit, maxProgress, request.identity, DateTime.now))
-          Future.successful(Redirect(routes.ApplicationController.index))
+        case (name, description, timeLimit, maxProgress) => for {
+          goal <- goalDAO.create(new Goal(0, name, description, timeLimit, maxProgress, request.identity, DateTime.now))
+        } yield Redirect(routes.ApplicationController.showGoal(goal.goalID))
       }
     )
   }

@@ -32,9 +32,21 @@ class GoalDAOImpl @Inject() (protected val dbConfigProvider: DatabaseConfigProvi
       })
     }
 
-  def create(goal: Goal) = {
-    db.run(Goals += GoalsRow(goal.goalID, goal.name, goal.description, goal.timeLimit, goal.maxProgress, goal.createdBy.userID, goal.createdAt))
-    Future.successful(goal)
-  }
+  def find(id: Int) =
+    for {
+      row <- db.run((Goals join Users).filter(_._1.id === id).result.headOption)
+    } yield row match {
+      case Some((rGoal, rUser)) =>
+        Some(Goal(rGoal.id, rGoal.name, rGoal.description, new DateTime(rGoal.timeLimit), rGoal.maxProgress,
+          User(rUser.id, LoginInfo("twitter", rUser.socialId.toString), rUser.screenName, rUser.apiToken),
+          new DateTime(rGoal.createdAt)))
+      case None => None
+    }
+
+  def create(goal: Goal) =
+    db.run((Goals returning Goals.map(_.id)) += GoalsRow(goal.goalID, goal.name, goal.description, goal.timeLimit, goal.maxProgress, goal.createdBy.userID, goal.createdAt))
+      .flatMap { id =>
+        Future.successful(goal.copy(goalID = id))
+      }
 
 }

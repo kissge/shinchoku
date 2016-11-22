@@ -17,6 +17,11 @@ trait GoalDAO {
   def list(): Future[Seq[Goal]]
 
   /**
+   *  Find a goal.
+   */
+  def find(id: Int): Future[Option[Goal]]
+
+  /**
    * Create a goal.
    */
   def create(goal: Goal): Future[Goal]

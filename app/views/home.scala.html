@@ -23,7 +23,7 @@
         <ul>
             @goals.map { goal =>
                 <li class="@if(goal.timeLimit.isBeforeNow){past}">
-                    @goal.timeLimit @goal.name
+                    <a href="@routes.ApplicationController.showGoal(goal.goalID)">@goal.timeLimit @goal.name</a>
                     by <a href="https://twitter.com/@goal.createdBy.screenName">@@@goal.createdBy.screenName</a> (@goal.createdAt)
                 </li>
             }
